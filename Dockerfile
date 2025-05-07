@@ -1,13 +1,10 @@
-FROM node:23-alpine3.20 as angular
-
+# Stage 1
+FROM node:latest AS node
 WORKDIR /app
-
 COPY . .
 RUN npm install
-RUN npm run build
+RUN npm run build --prod
 
-
-FROM httpd:alpine3.20
-
-WORKDIR /urs/local/apache2/htdocs
-COPY --from=angular /app/dist/angulartest .
+# Stage 2
+FROM nginx:alpine
+COPY --from=node /app/dist/angulartest/browser /usr/share/nginx/html
